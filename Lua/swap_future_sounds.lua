@@ -4,7 +4,7 @@ Hook.Patch(
     ".ctor",
     function(instance, ptable)
         local filename = ptable["filename"]
-        local filename = string.gsub(filename, "\\", "/")
+        filename = string.gsub(filename, "\\", "/")
         local newFilename = Resound.SoundPairs[filename]
         if newFilename then
             ptable["filename"] = newFilename
