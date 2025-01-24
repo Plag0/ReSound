@@ -1,4 +1,4 @@
--- This code replaces any new sound that is loaded while playing the game.
+-- This code replaces any new sound that is loaded after Lua.
 Hook.Patch(
     "Barotrauma.Sounds.Sound",
     ".ctor",
@@ -8,7 +8,6 @@ Hook.Patch(
         local newFilename = Resound.SoundPairs[filename]
         if newFilename then
             ptable["filename"] = newFilename
-            --print(string.format("Debug: swap_future_sounds.lua - Replaced sound %s", newFilename))
         end
     end,
 Hook.HookMethodType.Before)
