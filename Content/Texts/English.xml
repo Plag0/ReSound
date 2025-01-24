@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<infotexts language="English" nowhitespace="false" translatedname="English">
+	<resound_reading_from_mod>Reading sound overrides from mod "%s"...</resound_reading_from_mod>
+    <resound_reading_from_mod_failed>Error while reading sound overrides in mod "%s": The json file is incorrectly formatted</resound_reading_from_mod_failed>
+    <resound_find_vanilla_sound_failed>Error in mod "%s": The vanilla sound path "%s" does not exist</resound_find_vanilla_sound_failed>
+    <resound_find_custom_sound_failed>Error in mod "%s": The custom sound path "%s" does not exist</resound_find_custom_sound_failed>
+    <resound_override_warning>Load order warning: %s is replacing %s with %s</resound_override_warning>
+    <resound_registered_sound>Registered sound replacement - %s : %s</resound_registered_sound>
+    <resound_reading_finished>Finished reading: Successfully registered %d sound overrides</resound_reading_finished>
+    <resound_reading_finished_failed>Finished reading: Failed to register any sound overrides</resound_reading_finished_failed>
+</infotexts>

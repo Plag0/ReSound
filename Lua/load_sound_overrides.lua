@@ -1,42 +1,86 @@
-print(string.format("Resound - Reading sound overrides...", #Resound.SoundPairs))
+LuaUserData.RegisterType("Barotrauma.IO.Path")
+local Path = LuaUserData.CreateStatic("Barotrauma.IO.Path", true)
+
+LuaUserData.RegisterType("Barotrauma.SaveUtil")
+local SaveUtil = LuaUserData.CreateStatic("Barotrauma.SaveUtil", true)
+
+LuaUserData.RegisterType('Barotrauma.LuaCsLogger')
+local LuaCsLogger = LuaUserData.CreateStatic('Barotrauma.LuaCsLogger')
+
+LuaUserData.RegisterType('Microsoft.Xna.Framework.Color')
+local Color = LuaUserData.CreateStatic('Microsoft.Xna.Framework.Color')
 
 for package in ContentPackageManager.EnabledPackages.All do
-    local sound_overrides_file = package.Dir .. "/sound_overrides.json"
-    local sound_pairs = {}
+    local sound_overrides_file = Path.Combine(package.Dir, "resound_overrides.json")
+    local sound_overrides = {}
     
     if File.Exists(sound_overrides_file) then
-        print(string.format("Resound - Reading sound overrides from \"%s\":", package.Name))
-        sound_pairs = json.parse(File.Read(sound_overrides_file))
+        local success, result = pcall(json.parse, File.Read(sound_overrides_file))
+        if success then
+            sound_overrides = result
+            LuaCsLogger.LogMessage(string.format("ReSound | " .. TextManager.Get("resound_reading_from_mod").Value, package.Name), Color.Green)
+        else
+            LuaCsLogger.LogError(string.format("ReSound | " .. TextManager.Get("resound_reading_from_mod_failed").Value, package.Name, vanilla_sound_path))
+        end
     end
 
-    -- TODO Test what happens if json file not properly formatted.
+    for key, value in pairs(sound_overrides) do
 
-    for key, value in pairs(sound_pairs) do
+        local custom_sound_path = Path.Combine(package.Dir, value)
+        local vanilla_sound_path = Path.Combine(Path.GetFullPath(key))
 
-        local sound_path = package.Dir .. "/" .. value
-
-        if not File.Exists(sound_path) then
-            print(string.format("\tResound - Error in mod \"%s\": \"%s\" does not exist", package.Name, sound_path))
-
-        else
-            -- Cosmetics.
-            local previous_directory = Resound.SoundPairs[key]
-            local new_filename = sound_path:match("^.+/(.+)$")
-
-            if previous_directory then
-                local previous_filename = previous_directory:match("^.+/(.+)$")
-                print(string.format("\tResound - Load order warning: \"%s\" is replacing \"%s\" with \"%s\"", package.Name, previous_filename, new_filename))
-            else
-                print(string.format("\tResound - Registered sound: \"%s\"", new_filename))
-            end
-
-            Resound.SoundPairs[key] = sound_path
+        -- Different path for replacing workshop sounds.
+        if string.find(key, "^WorkshopMods/Installed/") then
+            vanilla_sound_path = Path.Combine(SaveUtil.DefaultSaveFolder, key)
         end
+
+        -- Normalise slashes
+        custom_sound_path = string.gsub(custom_sound_path, "\\", "/")
+        vanilla_sound_path = string.gsub(vanilla_sound_path, "\\", "/")
+
+        -- Check if another mod has already replaced this vanilla sound.
+        local is_already_replaced = Resound.SoundPairs[vanilla_sound_path]
+        
+        -- Helpful feedback on whether the sound files exist or not.
+        local found_vanilla_sound = false
+        local found_custom_sound = false
+        if File.Exists(vanilla_sound_path) then
+            found_vanilla_sound = true
+        end
+        if File.Exists(custom_sound_path) then
+            found_custom_sound = true
+        end
+        if not found_custom_sound then
+            LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_custom_sound_failed").Value, package.Name, custom_sound_path))
+        end
+        if not found_vanilla_sound then
+            LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_vanilla_sound_failed").Value, package.Name, vanilla_sound_path))
+        end 
+        if not found_custom_sound or not found_vanilla_sound then
+            goto continue
+        end
+        
+        -- Both paths are guranteed to be valid at this point.
+        if is_already_replaced then
+            LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_override_warning").Value, package.Name, Path.GetFileName(is_already_replaced), Path.GetFileName(custom_sound_path), Color.Yellow))
+        else
+            -- Temporary logging.
+            --LuaCsLogger.LogMessage(string.format("DEBUG: " .. TextManager.Get("resound_registered_sound").Value, Path.GetFileName(vanilla_sound_path), Path.GetFileName(custom_sound_path), Color.Green))
+        end
+
+        Resound.SoundPairs[vanilla_sound_path] = custom_sound_path
+
+        ::continue::
     end
 end
 
+-- Additional user feedback.
 local count = 0
 for _ in Resound.SoundPairs do
     count = count + 1
 end
-print(string.format("Resound - Successfully registered %d sound overrides!", count))
+if count > 0 then
+    LuaCsLogger.LogMessage(string.format("ReSound | " .. TextManager.Get("resound_reading_finished").Value, count, Color.Green))
+else
+    LuaCsLogger.LogError("ReSound | " .. TextManager.Get("resound_reading_finished_failed").Value)
+end
