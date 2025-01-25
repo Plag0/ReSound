@@ -20,15 +20,15 @@ Hook.Patch(
         if additional_sounds and math.random(100) <= additional_sounds.chance_of_playing then
             local random_index = math.random(#additional_sounds.sounds)
             ptable["sound"] = additional_sounds.sounds[random_index]
-            ptable["gain"] = Single(additional_sounds.sound_fields[random_index].gain or gain)
-            ptable["near"] = Single(additional_sounds.sound_fields[random_index].near or near)
-            ptable["far"] = Single(additional_sounds.sound_fields[random_index].far or far)
+            ptable["gain"] = additional_sounds.sound_fields[random_index].gain or Single(gain)
+            ptable["near"] = additional_sounds.sound_fields[random_index].near or Single(near)
+            ptable["far"] = additional_sounds.sound_fields[random_index].far or Single(far)
         end
 
         if sound_fields then
-            ptable["gain"] = Single(sound_fields.gain or gain)
-            ptable["near"] = Single(sound_fields.near or near)
-            ptable["far"] = Single(sound_fields.far or far)
+            ptable["gain"] = sound_fields.gain or Single(gain)
+            ptable["near"] = sound_fields.near or Single(near)
+            ptable["far"] = sound_fields.far or Single(far)
         end
     end,
 Hook.HookMethodType.Before)

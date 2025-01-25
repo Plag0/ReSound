@@ -3,6 +3,8 @@ Hook.Patch(
     "Barotrauma.Sounds.Sound",
     ".ctor",
     function(instance, ptable)
+        if Resound.IsUpdatingSounds then return end
+
         local filename = ptable["filename"]
         filename = string.gsub(filename, "\\", "/")
         local newFilename = Resound.SoundPairs[filename]

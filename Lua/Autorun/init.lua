@@ -9,14 +9,20 @@ Resound.PATH = table.pack(...)[1]
 -- Vanilla sounds and their custom replacement.
 Resound.SoundPairs = {} -- Pairs of "vanilla/path":"custom/path"
 
+-- Custom sounds and what vanilla sound they replace. Used for reverting back to vanilla sounds.
+Resound.SoundPairsInverted = {}
+
 -- Sound params for the custom replacements.
 Resound.SoundFields = {} -- Pairs of "vanilla/path":{gain, near, far}
 
 -- Additional sounds.
 Resound.SoundGroups = {} -- Pairs of "sound/group/path":{sounds={}, sound_fields={{gain, near, far}}, total_num_of_sounds, chance_of_playing}
 
+Resound.IsUpdatingSounds = false
+
 -- Load files.
 local path = Resound.PATH
+dofile(path .. "/Lua/utility.lua")
 dofile(path .. "/Lua/load_sound_overrides.lua")
 dofile(path .. "/Lua/swap_future_sounds.lua")
 dofile(path .. "/Lua/swap_past_sounds.lua")
