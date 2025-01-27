@@ -1,9 +1,10 @@
 LuaUserData.MakeFieldAccessible(Descriptors["Barotrauma.Sounds.SoundManager"], "playingChannels")
+
 Hook.Add("stop", "resound_stop", function()
 
     UnloadAdditionalSounds()
 
-    UpdateAllSounds(Resound.SoundPairsInverted)
+    UpdateAllSounds(Resound.CustomToOriginalMap)
 
     -- Stop any playing channels.
     for side in Game.SoundManager.playingChannels do

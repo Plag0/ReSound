@@ -1,34 +1,45 @@
--- This allows for additional sounds to be played and for all sounds to have their volume and range values tweaked.
+-- This allows for additional sounds to be played or removed and for all sounds to have their volume and range values tweaked.
+
+local DEFAULT_BASE_GAIN = 1
+local DEFAULT_BASE_NEAR = 100
+local DEFAULT_BASE_FAR = 200
 
 Hook.Patch(
     "Barotrauma.Sounds.SoundChannel",
     ".ctor",
     function(instance, ptable)
         local sound = ptable["sound"]
-        local gain = ptable["gain"]
-        local near = ptable["near"]
-        local far = ptable["far"]
         local filename = sound.Filename
         filename = string.gsub(filename, "\\", "/")
 
-        -- Remove any number and .ogg from the end of the filename to check for additional sounds for that group.
-        local sound_group = string.gsub(filename, "(%d*)%.ogg$", "")
+        local sound_group_id = Resound.SoundPathToGroupID[filename]
+        local sound_group = Resound.SoundGroups[sound_group_id]
+        
 
-        local additional_sounds = Resound.SoundGroups[sound_group]
-        local sound_fields = Resound.SoundFields[filename]
-
-        if additional_sounds and math.random(100) <= additional_sounds.chance_of_playing then
-            local random_index = math.random(#additional_sounds.sounds)
-            ptable["sound"] = additional_sounds.sounds[random_index]
-            ptable["gain"] = additional_sounds.sound_fields[random_index].gain or Single(gain)
-            ptable["near"] = additional_sounds.sound_fields[random_index].near or Single(near)
-            ptable["far"] = additional_sounds.sound_fields[random_index].far or Single(far)
-        end
-
-        if sound_fields then
-            ptable["gain"] = sound_fields.gain or Single(gain)
-            ptable["near"] = sound_fields.near or Single(near)
-            ptable["far"] = sound_fields.far or Single(far)
+        if sound_group then
+            for sound in sound_group.sounds do
+                print("Sound in group: " .. sound.Filename)
+            end
+            print("There are " .. #sound_group.sounds .. " sounds in the group.")
+            if #sound_group.sounds > 0 then
+                sound = sound_group.sounds[math.random(#sound_group.sounds)]
+                ptable["sound"] = sound
+                
+            else -- All sounds have been removed from the group so we just set the volume to zero.
+                ptable["gain"] = Single(0)
+                return
+            end
+            
+            -- If the default base values are modified, that means the sound has custom values.
+            if sound.BaseGain ~= DEFAULT_BASE_GAIN then
+                ptable["gain"] = Single(sound.BaseGain)
+            end
+            if sound.BaseNear ~= DEFAULT_BASE_NEAR then
+                ptable["near"] = Single(sound.BaseNear)
+            end
+            if sound.BaseFar ~= DEFAULT_BASE_FAR then
+                ptable["far"] = Single(sound.BaseFar)
+            end
         end
     end,
 Hook.HookMethodType.Before)
