@@ -35,7 +35,7 @@ local function get_new_sound(old_sound, new_filename)
 end
 
 local function update_sound_pool(filename, sound)
-    -- Add sound to group it belongs to. TODO - Maybe check the sound is real
+    -- Add sound to group it belongs to.
     local sound_group_id = Resound.SoundPathToGroupID[filename]
     local sound_group = Resound.SoundGroups[sound_group_id]
     if sound_group and sound_group.sounds_to_load[filename] then
