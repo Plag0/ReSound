@@ -220,26 +220,17 @@ local function override_sound(sound_info)
     end
 
     Resound.OriginalToCustomMap[original_sound_path] = custom_sound_path
-    Resound.CustomToOriginalMap[custom_sound_path] = original_sound_path
     Resound.CustomSoundParams[original_sound_path] = sound_info.fields
 
     sound_group_id = Resound.SoundPathToGroupID[original_sound_path]
     sound_group = Resound.SoundGroups[sound_group_id]
     if sound_group then
-        Resound.SoundPathToGroupID[original_sound_path] = nil
-        Resound.SoundPathToGroupID[custom_sound_path] = sound_group_id
-
         -- Override additional sounds that have been loaded by this mod or others.
         for i = #sound_group.sounds, 1, -1 do
             if original_sound_path == sound_group.sounds[i].Filename then
                 table.remove(sound_group.sounds, i)
                 table.insert(sound_group.sounds, Game.SoundManager.LoadSound(custom_sound_path))
             end
-        end
-
-        if sound_group.sounds_to_load[original_sound_path] then
-            sound_group.sounds_to_load[custom_sound_path] = true
-            sound_group.sounds_to_load[original_sound_path] = false
         end
     end
 

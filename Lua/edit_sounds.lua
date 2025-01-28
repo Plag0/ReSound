@@ -9,18 +9,15 @@ Hook.Patch(
     ".ctor",
     function(instance, ptable)
         local sound = ptable["sound"]
+        local original_filename = Resound.HashToOriginalMap[sound.GetHashCode()]
         local filename = sound.Filename
         filename = string.gsub(filename, "\\", "/")
 
-        local sound_group_id = Resound.SoundPathToGroupID[filename]
+        --TODO Check using only original filenames for group ID is okay
+        local sound_group_id = Resound.SoundPathToGroupID[original_filename]
         local sound_group = Resound.SoundGroups[sound_group_id]
-        
 
         if sound_group then
-            for sound in sound_group.sounds do
-                print("Sound in group: " .. sound.Filename)
-            end
-            print("There are " .. #sound_group.sounds .. " sounds in the group.")
             if #sound_group.sounds > 0 then
                 sound = sound_group.sounds[math.random(#sound_group.sounds)]
                 ptable["sound"] = sound

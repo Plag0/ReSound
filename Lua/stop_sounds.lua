@@ -4,7 +4,7 @@ Hook.Add("stop", "resound_stop", function()
 
     UnloadAdditionalSounds()
 
-    UpdateAllSounds(Resound.CustomToOriginalMap)
+    UpdateAllSounds(Resound.HashToOriginalMap)
 
     -- Stop any playing channels.
     for side in Game.SoundManager.playingChannels do

@@ -6,8 +6,8 @@ Resound = {}
 Resound.PATH = table.pack(...)[1]
 -- Original sound directories mapped to their custom replacement.
 Resound.OriginalToCustomMap = {} -- Pairs of "original_path":"custom_path"
--- Custom sound directories mapped to their original values.
-Resound.CustomToOriginalMap = {}
+-- A sound object hash mapped to its original file path.
+Resound.HashToOriginalMap = {}
 -- Gain, near, and far values for custom sounds mapped to the directory of the original sound.
 Resound.CustomSoundParams = {} -- Pairs of "sound_path":{ gain=1, near=100, far=200 }
 -- Groups of sounds that share a name and directory. Used as a virtual pool of sounds to play from when a related sound has been subtracted or added.

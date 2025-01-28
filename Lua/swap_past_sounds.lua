@@ -56,14 +56,16 @@ local function update_component_sounds(sound_pairs)
                     local old_sound = itemSound.RoundSound.Sound
                     local filename = old_sound.Filename
                     filename = string.gsub(filename, "\\", "/")
-                    local new_filename = sound_pairs[filename]
+                    local new_filename = sound_pairs[filename] or sound_pairs[old_sound.GetHashCode()]
+
                     if not new_filename then
                         update_sound_pool(filename, old_sound)
                     else
                         local new_sound = get_new_sound(old_sound, new_filename)
-                        table.insert(sounds_to_remove, old_sound)
                         itemSound.RoundSound.Sound = new_sound
-                        update_sound_pool(new_filename, new_sound)
+                        Resound.HashToOriginalMap[new_sound.GetHashCode()] = filename
+                        table.insert(sounds_to_remove, old_sound)
+                        update_sound_pool(filename, new_sound)
                     end
                 end
             end
@@ -79,15 +81,16 @@ local function update_affliction_sounds(sound_pairs)
             local old_sound = round_sound.Sound
             local filename = old_sound.Filename
             filename = string.gsub(filename, "\\", "/")
-            local new_filename = sound_pairs[filename]
+            local new_filename = sound_pairs[filename] or sound_pairs[old_sound.GetHashCode()]
 
             if not new_filename then
                 update_sound_pool(filename, old_sound)
             else
                 local new_sound = get_new_sound(old_sound, new_filename)
-                table.insert(sounds_to_remove, old_sound)
                 round_sound.Sound = new_sound
-                update_sound_pool(new_filename, new_sound)
+                Resound.HashToOriginalMap[new_sound.GetHashCode()] = filename
+                table.insert(sounds_to_remove, old_sound)
+                update_sound_pool(filename, new_sound)
             end
         end
     end
@@ -99,16 +102,16 @@ local function update_sound_prefabs(sound_pairs)
         local old_sound = sound_prefab.Sound
         local filename = old_sound.Filename
         filename = string.gsub(filename, "\\", "/")
-
-        local new_filename = sound_pairs[filename]
+        local new_filename = sound_pairs[filename] or sound_pairs[old_sound.GetHashCode()]
 
         if not new_filename then
             update_sound_pool(filename, old_sound)
         else
             local new_sound = get_new_sound(old_sound, new_filename)
-            table.insert(sounds_to_remove, old_sound)
             sound_prefab.set_Sound(new_sound)
-            update_sound_pool(new_filename, new_sound)
+            Resound.HashToOriginalMap[new_sound.GetHashCode()] = filename
+            table.insert(sounds_to_remove, old_sound)
+            update_sound_pool(filename, new_sound)
         end
     end
 end
