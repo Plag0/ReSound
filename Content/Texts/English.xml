@@ -12,4 +12,16 @@
     <resound_registered_sound>Registered sound replacement of "%s" with "%s"</resound_registered_sound>
     <resound_reading_finished>Finished reading: Checked %d compatible mods and successfully registered %d sound replacements, %d additions, and %d subtractions</resound_reading_finished>
     <resound_reading_finished_failed>Finished reading: Checked %d compatible mods but failed to register any sound replacements, additions, or subtractions</resound_reading_finished_failed>
+
+    <resound_settings>ReSound</resound_settings>
+    <resound_generalsettings>General Settings</resound_generalsettings>
+    <resound_modsettings>Loaded Mods</resound_modsettings>
+    <resound_enabled>Enabled</resound_enabled>
+    <resound_enabled_tooltip>Toggles the functionality of ReSound</resound_enabled_tooltip>
+    <resound_importantlogs>Useful Logs</resound_importantlogs>
+    <resound_importantlogs_tooltip>Toggles useful messages in the console relating to loading errors in other mods</resound_importantlogs_tooltip>
+    <resound_otherlogs>Other Logs</resound_otherlogs>
+    <resound_otherlogs_tooltip>Toggles more detailed messages in the console relating to registering sounds</resound_otherlogs_tooltip>
+    <resound_enablepackage>Enable "%s"</resound_enablepackage>
+    <resound_enablepackage_tooltip>Toggles all changes from the mod "%s"</resound_enablepackage_tooltip>
 </infotexts>

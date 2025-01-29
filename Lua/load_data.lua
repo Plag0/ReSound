@@ -46,7 +46,9 @@ local function add_sound(sound_info)
 
     -- Check if the custom sound file exists and skip the sound if not.
     if not File.Exists(custom_sound_path) then
-        LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_custom_sound_failed").Value, mod_name, custom_sound_path))
+        if Resound.Config.ImportantLogs then
+            LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_custom_sound_failed").Value, mod_name, custom_sound_path))
+        end
         return
     end
 
@@ -64,7 +66,9 @@ local function add_sound(sound_info)
         for _ in Resound.SoundGroups[sound_group_id].sounds_to_load do
             num_sounds_in_group = num_sounds_in_group + 1
         end
-        LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_registered_group_add").Value, Path.GetFileName(custom_sound_path), Path.GetFileName(sound_group_id), num_sounds_in_group, 100 / num_sounds_in_group), Color.Green)
+        if Resound.Config.OtherLogs then
+            LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_registered_group_add").Value, Path.GetFileName(custom_sound_path), Path.GetFileName(sound_group_id), num_sounds_in_group, 100 / num_sounds_in_group), Color.Green)
+        end
         return
     end
 
@@ -85,21 +89,26 @@ local function add_sound(sound_info)
     end
 
     if num_sounds_in_group <= 0 then
-        LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_group_failed_add").Value, mod_name, sound_group_id, Path.GetFileName(custom_sound_path)))
-    else
-        Resound.SoundGroups[sound_group_id] = {
-            sounds_to_load = sounds_to_load, -- Keeps track of what sounds have been loaded in a dict formatted filename:true
-            sounds = {} -- Sounds are added as they are loaded elsewhere
-        }
-        local custom_sound = Game.SoundManager.LoadSound(custom_sound_path)
-        custom_sound.BaseGain = gain or custom_sound.BaseGain
-        custom_sound.BaseNear = near or custom_sound.BaseNear
-        custom_sound.BaseFar = far or custom_sound.BaseFar
-        local sounds = Resound.SoundGroups[sound_group_id].sounds
-        table.insert(sounds, custom_sound)
-        Resound.SoundPathToGroupID[custom_sound_path] = sound_group_id
+        if Resound.Config.ImportantLogs then
+            LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_group_failed_add").Value, mod_name, sound_group_id, Path.GetFileName(custom_sound_path)))
+        end
+        return
+    end
 
-        num_sounds_in_group = num_sounds_in_group + #sounds
+    Resound.SoundGroups[sound_group_id] = {
+        sounds_to_load = sounds_to_load, -- Keeps track of what sounds have been loaded in a dict formatted filename:true
+        sounds = {} -- Sounds are added as they are loaded elsewhere
+    }
+    local custom_sound = Game.SoundManager.LoadSound(custom_sound_path)
+    custom_sound.BaseGain = gain or custom_sound.BaseGain
+    custom_sound.BaseNear = near or custom_sound.BaseNear
+    custom_sound.BaseFar = far or custom_sound.BaseFar
+    local sounds = Resound.SoundGroups[sound_group_id].sounds
+    table.insert(sounds, custom_sound)
+    Resound.SoundPathToGroupID[custom_sound_path] = sound_group_id
+
+    num_sounds_in_group = num_sounds_in_group + #sounds
+    if Resound.Config.OtherLogs then
         LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_registered_group_add").Value, Path.GetFileName(custom_sound_path), Path.GetFileName(sound_group_id), num_sounds_in_group, 100 / num_sounds_in_group), Color.Green)
     end
 end
@@ -113,7 +122,9 @@ local function subtract_sound(sound_info)
 
     -- Check if the original sound file exists and skip the sound if not.
     if not File.Exists(target_sound_path) then
-        LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_vanilla_sound_failed").Value, mod_name, target_sound_path))
+        if Resound.Config.ImportantLogs then
+            LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_vanilla_sound_failed").Value, mod_name, target_sound_path))
+        end
         return
     end
 
@@ -150,7 +161,9 @@ local function subtract_sound(sound_info)
             end
         end
         num_remaining_sounds = num_remaining_sounds + #sounds
-        LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_registered_group_sub").Value, Path.GetFileName(target_sound_path), Path.GetFileName(sound_group_id), num_remaining_sounds, Path.GetFileName(sound_group_id)), Color.Green)
+        if Resound.Config.OtherLogs then
+            LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_registered_group_sub").Value, Path.GetFileName(target_sound_path), Path.GetFileName(sound_group_id), num_remaining_sounds, Path.GetFileName(sound_group_id)), Color.Green)
+        end
         return
     end
 
@@ -180,12 +193,17 @@ local function subtract_sound(sound_info)
     end
 
     if num_discovered_sounds <= 0 then
-        LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_group_failed_sub").Value, mod_name, sound_group_id, Path.GetFileName(target_sound_path)))
-    else
-        Resound.SoundGroups[sound_group_id] = {
-            sounds_to_load = sounds_to_load, -- Keeps track of what sounds have been loaded in a dict formatted filename:true
-            sounds = {} -- Sounds are added as they are loaded elsewhere
-        }
+        if Resound.Config.ImportantLogs then
+            LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_group_failed_sub").Value, mod_name, sound_group_id, Path.GetFileName(target_sound_path)))
+        end
+        return
+    end
+
+    Resound.SoundGroups[sound_group_id] = {
+        sounds_to_load = sounds_to_load, -- Keeps track of what sounds have been loaded in a dict formatted filename:true
+        sounds = {} -- Sounds are added as they are loaded elsewhere
+    }
+    if Resound.Config.OtherLogs then
         LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_registered_group_sub").Value, Path.GetFileName(target_sound_path), Path.GetFileName(sound_group_id), num_remaining_sounds, Path.GetFileName(sound_group_id)), Color.Green)
     end
 end
@@ -202,21 +220,29 @@ local function override_sound(sound_info)
     
     -- Check if the custom sound file exists and skip the sound if not.
     if not File.Exists(custom_sound_path) then
-        LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_custom_sound_failed").Value, mod_name, custom_sound_path))
+        if Resound.Config.ImportantLogs then
+            LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_custom_sound_failed").Value, mod_name, custom_sound_path))
+        end
         goto continue
     end
 
     -- Check if the vanilla sound file exists and skip the sound if not.
     if not File.Exists(original_sound_path) then
-        LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_vanilla_sound_failed").Value, mod_name, original_sound_path))
+        if Resound.Config.ImportantLogs then
+            LuaCsLogger.LogError(string.format(TextManager.Get("resound_find_vanilla_sound_failed").Value, mod_name, original_sound_path))
+        end
         goto continue
     end
     
     -- Warn user if a mod is replacing another mods sounds.
     if is_already_replaced then
-        LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_override_warning").Value, mod_name, Path.GetFileName(is_already_replaced), Path.GetFileName(custom_sound_path)), Color.Yellow)
+        if Resound.Config.ImportantLogs then
+            LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_override_warning").Value, mod_name, Path.GetFileName(is_already_replaced), Path.GetFileName(custom_sound_path)), Color.Yellow)
+        end
     else
-        LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_registered_sound").Value, Path.GetFileName(original_sound_path), Path.GetFileName(custom_sound_path)), Color.Green)
+        if Resound.Config.OtherLogs then
+            LuaCsLogger.LogMessage(string.format(TextManager.Get("resound_registered_sound").Value, Path.GetFileName(original_sound_path), Path.GetFileName(custom_sound_path)), Color.Green)
+        end
     end
 
     Resound.OriginalToCustomMap[original_sound_path] = custom_sound_path
@@ -243,6 +269,7 @@ local sounds_to_subtract = {}
 local sounds_to_add = {}
 
 -- Check packages in reverse order for intuitive load order overriding.
+Resound.LoadedPackages = {}
 local packages = {}
 for package in ContentPackageManager.EnabledPackages.All do
     table.insert(packages, package)
@@ -254,13 +281,20 @@ for i = #packages, 1, -1 do
     
     -- Check if mod has the "resound_overrides.json" file and try to load it into the sound_overrides variable.
     if File.Exists(sound_overrides_file) then
+        table.insert(Resound.LoadedPackages, package)
         local success, result = pcall(json.parse, File.Read(sound_overrides_file))
         number_of_mods_read = number_of_mods_read + 1
         if success then
-            sound_overrides = result
-            LuaCsLogger.LogMessage(string.format("ReSound | " .. TextManager.Get("resound_reading_from_mod").Value, package.Name), Color.Green)
+            if not Resound.Config.IgnoredPackages[package.Dir] then
+                sound_overrides = result
+            end
+            if Resound.Config.ImportantLogs then
+                LuaCsLogger.LogMessage(string.format("ReSound | " .. TextManager.Get("resound_reading_from_mod").Value, package.Name), Color.Green)
+            end
         else
-            LuaCsLogger.LogError(string.format("ReSound | " .. TextManager.Get("resound_reading_from_mod_failed").Value, package.Name))
+            if Resound.Config.ImportantLogs then
+                LuaCsLogger.LogError(string.format("ReSound | " .. TextManager.Get("resound_reading_from_mod_failed").Value, package.Name))
+            end
         end
     end
 
@@ -325,7 +359,7 @@ for sound_info in sounds_to_override do
     override_sound(sound_info)
 end
 
--- Tell user how many sounds were loaded, if zero sounds were loaded despite reading a file, display a failed message.
+-- Count totals.
 local override_count = 0
 for _ in Resound.OriginalToCustomMap do
     override_count = override_count + 1
@@ -335,8 +369,18 @@ for sound_group in Resound.SoundGroups do
     added_count = added_count + #sound_group.sounds
 end
 
+-- Tell user how many sounds were loaded, if zero sounds were loaded despite reading a file, display a failed message.
+if Resound.Config.ImportantLogs then
+    if (override_count > 0) or (added_count > 0) or (subtracted_count > 0) then
+        LuaCsLogger.LogMessage(string.format("ReSound | " .. TextManager.Get("resound_reading_finished").Value, number_of_mods_read, override_count, added_count, subtracted_count), Color.Green)
+    elseif (number_of_mods_read > 0) and (override_count <= 0) and (added_count <= 0) and (subtracted_count <= 0) then
+        LuaCsLogger.LogError(string.format("ReSound | " .. TextManager.Get("resound_reading_finished_failed").Value, number_of_mods_read))
+    end
+end
+
+-- Returns true if the rest of the program should run.
 if (override_count > 0) or (added_count > 0) or (subtracted_count > 0) then
-    LuaCsLogger.LogMessage(string.format("ReSound | " .. TextManager.Get("resound_reading_finished").Value, number_of_mods_read, override_count, added_count, subtracted_count), Color.Green)
-elseif (number_of_mods_read > 0) and (override_count <= 0) and (added_count <= 0) and (subtracted_count <= 0) then
-    LuaCsLogger.LogError(string.format("ReSound | " .. TextManager.Get("resound_reading_finished_failed").Value, number_of_mods_read))
+    return true
+else
+    return false
 end

@@ -125,10 +125,11 @@ local function remove_sounds(sounds_to_remove)
 end
 
 function UnloadAdditionalSounds()
-    for sound_group in Resound.SoundGroups do
-        for sound in sound_group.sounds do
+    for group_id, group in pairs(Resound.SoundGroups) do
+        for sound in group.sounds do
             table.insert(sounds_to_remove, sound)
         end
+        Resound.SoundGroups[group_id] = nil
     end
 
     remove_sounds(sounds_to_remove)
