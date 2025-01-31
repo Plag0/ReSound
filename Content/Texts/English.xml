@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <infotexts language="English" nowhitespace="false" translatedname="English">
-	<resound_reading_from_mod>Reading sound overrides from mod "%s"...</resound_reading_from_mod>
-    <resound_reading_from_mod_failed>Error while reading sound overrides in mod "%s": The JSON file is incorrectly formatted. Skipping...</resound_reading_from_mod_failed>
-    <resound_find_vanilla_sound_failed>Error in mod "%s": The vanilla sound "%s" does not exist. Skipping...</resound_find_vanilla_sound_failed>
-    <resound_find_custom_sound_failed>Error in mod "%s": The custom sound "%s" does not exist. Skipping...</resound_find_custom_sound_failed>
-    <resound_registered_group_add>Registered sound addition "%s" to group "%s" with %d total sounds and a %.1f%% chance of playing</resound_registered_group_add>
-    <resound_registered_group_sub>Registered sound subtraction "%s" from group "%s". There are %d remaining "%s" sounds</resound_registered_group_sub>
-    <resound_find_group_failed_add>Error in mod "%s": The sound group "%s" does not exist. The custom sound "%s" was not added. Skipping...</resound_find_group_failed_add>
-    <resound_find_group_failed_sub>Error in mod "%s": The sound group "%s" does not exist. The target sound "%s" was not removed. Skipping...</resound_find_group_failed_sub>
-    <resound_override_warning>Load order alert: "%s" is replacing an already replaced sound "%s" with "%s"</resound_override_warning>
-    <resound_registered_sound>Registered sound replacement of "%s" with "%s"</resound_registered_sound>
-    <resound_reading_finished>Finished reading: Checked %d compatible mods and successfully registered %d sound replacements, %d additions, and %d subtractions</resound_reading_finished>
-    <resound_reading_finished_failed>Finished reading: Checked %d compatible mods but failed to register any sound replacements, additions, or subtractions</resound_reading_finished_failed>
+    <resound_luauserdataerror>ReSound | Unable to start mod. Please enable "Enable CSharp Scripting" in "LuaCs Settings", located in the top-left corner of the main menu</resound_luauserdataerror>
+	<resound_reading_from_mod>ReSound | Reading sound overrides from mod "%s"...</resound_reading_from_mod>
+    <resound_reading_from_mod_failed>ReSound | Error while reading sound overrides in mod "%s": The JSON file is incorrectly formatted. Skipping...</resound_reading_from_mod_failed>
+    <resound_find_original_sound_failed>ReSound | Error in mod "%s": The original sound "%s" does not exist. Skipping...</resound_find_original_sound_failed>
+    <resound_find_custom_sound_failed>ReSound | Error in mod "%s": The replacement sound "%s" does not exist. Skipping...</resound_find_custom_sound_failed>
+    <resound_registered_group_add>ReSound | Registered sound addition "%s" to group "%s" with %d total sounds and a %.1f%% chance of playing</resound_registered_group_add>
+    <resound_registered_group_sub>ReSound | Registered sound subtraction "%s" from group "%s". There are %d remaining "%s" sounds</resound_registered_group_sub>
+    <resound_find_group_failed_add>ReSound | Error in mod "%s": The sound group "%s" does not exist. The custom sound "%s" was not added. Skipping...</resound_find_group_failed_add>
+    <resound_find_group_failed_sub>ReSound | Error in mod "%s": The sound group "%s" does not exist. The target sound "%s" was not removed. Skipping...</resound_find_group_failed_sub>
+    <resound_override_warning>ReSound | Load order alert: "%s" is replacing an already replaced sound "%s" with "%s"</resound_override_warning>
+    <resound_registered_sound>ReSound | Registered sound replacement of "%s" with "%s"</resound_registered_sound>
+    <resound_reading_finished>ReSound | Finished reading: Checked %d compatible mods and successfully registered %d sound replacements, %d additions, and %d subtractions</resound_reading_finished>
+    <resound_reading_finished_failed>ReSound | Finished reading: Checked %d compatible mods but failed to register any sound replacements, additions, or subtractions</resound_reading_finished_failed>
 
     <resound_settings>ReSound</resound_settings>
     <resound_generalsettings>General Settings</resound_generalsettings>

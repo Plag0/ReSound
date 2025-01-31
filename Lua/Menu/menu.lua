@@ -26,10 +26,10 @@ easySettings.AddMenu(TextManager.Get("resound_settings").Value, function (parent
         Resound.Config.Enabled = state
         easySettings.SaveTable(config_path, Resound.Config)
         if Resound.Config.Enabled then
-            StartMod()
+            Resound.StartMod()
             open_new_menu()
         else
-            StopMod()
+            Resound.StopMod()
         end
     end, Resound.Config.Enabled)
     tick.ToolTip = TextManager.Get("resound_enabled_tooltip").Value
@@ -58,7 +58,7 @@ easySettings.AddMenu(TextManager.Get("resound_settings").Value, function (parent
             Resound.Config.IgnoredPackages[package.Dir] = not state
             easySettings.SaveTable(config_path, Resound.Config)
             if Resound.Config.Enabled then
-                RestartMod()
+                Resound.RestartMod()
             end
         end, not Resound.Config.IgnoredPackages[package.Dir])
         tick.ToolTip = string.format(TextManager.Get("resound_enablepackage_tooltip").Value, package.Name)

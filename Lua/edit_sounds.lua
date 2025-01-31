@@ -1,9 +1,8 @@
--- This allows for additional sounds to be played or removed and for all sounds to have their volume and range values tweaked.
-
 local DEFAULT_BASE_GAIN = 1
 local DEFAULT_BASE_NEAR = 100
 local DEFAULT_BASE_FAR = 200
 
+-- Allows for additional sounds to be played or removed and for all sounds to have their volume and range values tweaked.
 Hook.Patch(
     "Barotrauma.Sounds.SoundChannel",
     ".ctor",
@@ -13,7 +12,6 @@ Hook.Patch(
         local filename = sound.Filename
         filename = string.gsub(filename, "\\", "/")
 
-        --TODO Check using only original filenames for group ID is okay
         local sound_group_id = Resound.SoundPathToGroupID[original_filename]
         local sound_group = Resound.SoundGroups[sound_group_id]
 
@@ -22,7 +20,8 @@ Hook.Patch(
                 sound = sound_group.sounds[math.random(#sound_group.sounds)]
                 ptable["sound"] = sound
                 
-            else -- All sounds have been removed from the group so we just set the volume to zero.
+            else
+                -- All sounds have been removed from the group so we just set the volume to zero.
                 ptable["gain"] = Single(0)
                 return
             end

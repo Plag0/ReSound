@@ -1,18 +1,28 @@
--- This code runs once at the start of a round and replaces any loaded sounds that the swap_future_sounds.lua file can't get (because the sounds were created before it was running).
-
-LuaUserData.MakeMethodAccessible(Descriptors["Barotrauma.Sounds.SoundManager"], "ReloadSounds")
-LuaUserData.RegisterType("Barotrauma.SoundPrefab")
 LuaUserData.RegisterType("Barotrauma.StatusEffect")
 LuaUserData.MakeFieldAccessible(Descriptors["Barotrauma.StatusEffect"], "ActiveLoopingSounds") 
+LuaUserData.RegisterType("Barotrauma.SoundPrefab")
 LuaUserData.MakePropertyAccessible(Descriptors["Barotrauma.SoundPrefab"], "Sound")
 LuaUserData.MakeMethodAccessible(Descriptors["Barotrauma.SoundPrefab"], "set_Sound")
 LuaUserData.MakeMethodAccessible(Descriptors["Barotrauma.DamageSound"], "set_Sound")
 LuaUserData.MakeMethodAccessible(Descriptors["Barotrauma.BackgroundMusic"], "set_Sound")
 LuaUserData.MakeMethodAccessible(Descriptors["Barotrauma.GUISound"], "set_Sound")
+LuaUserData.MakeFieldAccessible(Descriptors["Barotrauma.Sounds.SoundManager"], "playingChannels")
 
+
+--[[
+This code is responsible for loading new sound objects and replacing the previous ones.
+It is used to transition between original and custom sound sets without restarting the game.
+
+Note to self: 
+We run this once at the start of the round since many sounds are loaded before the swap_future_sounds.lua script can run, so we have to go back and reload them.
+With some modifications, we could probably just reload the same sounds, do nothing, and the "swap_future_sounds.lua" script would take care of the rest. Currently that script is disabled when this one is running (using the Resound.IsUpdatingSounds var), but they were born to work together. Maybe one day...
+]]
+
+
+-- Replaced sounds to be removed from the LoadedSounds list and disposed.
 local sounds_to_remove = {}
 
--- Creates a copy of the old Sound with the only difference being a path to its replacement file.
+-- Creates a copy of the old Sound with the only difference being a new filename.
 local function get_new_sound(old_sound, new_filename)
     local new_sound = nil
     local fields = Resound.CustomSoundParams[old_sound.Filename]
@@ -124,7 +134,7 @@ local function remove_sounds(sounds_to_remove)
     end
 end
 
-function UnloadAdditionalSounds()
+local function unload_additional_sounds()
     for group_id, group in pairs(Resound.SoundGroups) do
         for sound in group.sounds do
             table.insert(sounds_to_remove, sound)
@@ -135,7 +145,7 @@ function UnloadAdditionalSounds()
     remove_sounds(sounds_to_remove)
 end
 
-function UpdateAllSounds(sound_pairs)
+local function update_all_sounds(sound_pairs)
     Resound.IsUpdatingSounds = true
 
     update_sound_prefabs(sound_pairs)
@@ -147,5 +157,33 @@ function UpdateAllSounds(sound_pairs)
     Resound.IsUpdatingSounds = false
 end
 
--- These functions go through all the places (that I know of) where Sound objects need to be replaced and swaps in the new sounds.
-UpdateAllSounds(Resound.OriginalToCustomMap)
+function Resound.StopMod()
+    unload_additional_sounds()
+
+    update_all_sounds(Resound.HashToOriginalMap)
+
+    -- Stop any playing channels.
+    for side in Game.SoundManager.playingChannels do
+        for channel in side do
+            channel.FadeOutAndDispose()
+        end
+    end
+end
+
+function Resound.RestartMod()
+    Resound.StopMod()
+    dofile(Resound.PATH .. "/Lua/start_mod.lua")
+end
+
+Hook.Add("stop", "resound_stop", function()
+    if GUI.GUI.PauseMenuOpen then
+        GUI.GUI.TogglePauseMenu()
+    end
+
+    if Resound.Config.Enabled then
+        Resound.StopMod()
+    end
+end)
+
+-- Run once on startup.
+update_all_sounds(Resound.OriginalToCustomMap)
